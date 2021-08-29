@@ -7,8 +7,10 @@ namespace lab {
 class JsonReader::Impl {
 public:
     std::shared_ptr<arrow::Schema> parse(const std::string& in) {
-        auto data = nlohmann::json::parse(in);
-        if (!data.is_object()) {
+        nlohmann::json data;
+        try {
+            data = nlohmann::json::parse(in);
+        } catch (std::exception& e) {
             return nullptr;
         }
 
@@ -38,6 +40,9 @@ public:
             }
             return arrow::utf8();
         } else if (value.is_array()) {
+            if (value.empty()) {
+                return arrow::list(arrow::null());
+            }
             return value.empty() ? arrow::list(arrow::null()) : arrow::list(get_arrow_type(value[0]));
         } else if (value.is_object()) {
             std::vector<std::shared_ptr<arrow::Field>> fields;
@@ -48,9 +53,6 @@ public:
         }
         return nullptr;
     }
-
-private:
-
 };
 
 JsonReader::JsonReader(): impl_(new JsonReader::Impl) {
