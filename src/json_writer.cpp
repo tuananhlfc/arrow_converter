@@ -21,21 +21,28 @@ public:
     nlohmann::json get_json_type(std::shared_ptr<arrow::DataType> arrow_type) {
         if (arrow_type->id() == arrow::Type::NA) {
             return nullptr;
-        } else if (arrow_type->id() == arrow::Type::BOOL) {
+        }
+        if (arrow_type->id() == arrow::Type::BOOL) {
             return default_value<bool>();
-        } else if (is_integer(arrow_type->id()) || is_timestamp(arrow_type->id())) {
-            return 0;
-        } else if (is_float(arrow_type->id())) {
-            return 0.0;
-        } else if (is_timedate(arrow_type->id())) {
+        }
+        if (is_integer(arrow_type->id()) || is_timestamp(arrow_type->id())) {
+            return default_value<int>();
+        }
+        if (is_float(arrow_type->id())) {
+            return default_value<double>();
+        }
+        if (is_timedate(arrow_type->id())) {
             return default_timestamp();
-        } else if (arrow_type->id() == arrow::Type::STRING) {
+        }
+        if (arrow_type->id() == arrow::Type::STRING) {
             return default_string();
-        } else if (arrow_type->id() == arrow::Type::LIST) {
+        }
+        if (arrow_type->id() == arrow::Type::LIST) {
             std::vector<nlohmann::json> children;
             children.push_back(get_json_type(arrow_type->fields()[0]->type()));
             return children;
-        } else if (arrow_type->id() == arrow::Type::STRUCT) {
+        }
+        if (arrow_type->id() == arrow::Type::STRUCT) {
             nlohmann::json sub_object;
             for (auto& field: arrow_type->fields()) {
                 sub_object[field->name()] = get_json_type(field->type());

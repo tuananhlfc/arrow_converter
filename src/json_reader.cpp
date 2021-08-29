@@ -1,13 +1,13 @@
-#include <nlohmann/json.hpp>
 #include "json_reader.hpp"
 #include "helper.hpp"
+#include <nlohmann/json.hpp>
 
 namespace lab {
 
 class JsonReader::Impl {
 public:
     std::shared_ptr<arrow::Schema> parse(const std::string& in) {
-        nlohmann::json data;
+        nlohmann::json data (nullptr);
         try {
             data = nlohmann::json::parse(in);
         } catch (std::exception& e) {
@@ -25,26 +25,32 @@ public:
         return arrow::schema(fields);
     }
 
-    std::shared_ptr<arrow::DataType> get_arrow_type(nlohmann::json& value) {
+    std::shared_ptr<arrow::DataType> get_arrow_type(const nlohmann::json& value) {
         if (value.is_null()) {
             return arrow::null();
-        } else if (value.is_boolean()) {
+        }
+        if (value.is_boolean()) {
             return arrow::boolean();
-        } else if (value.is_number_integer()) {
+        }
+        if (value.is_number_integer()) {
             return arrow::int64();
-        } else if (value.is_number_float()) {
+        }
+        if (value.is_number_float()) {
             return arrow::float64();
-        } else if (value.is_string()) {
+        }
+        if (value.is_string()) {
             if (valid_timestamp(value)) {
                 return arrow::timestamp(arrow::TimeUnit::SECOND);
             }
             return arrow::utf8();
-        } else if (value.is_array()) {
+        }
+        if (value.is_array()) {
             if (value.empty()) {
                 return arrow::list(arrow::null());
             }
             return value.empty() ? arrow::list(arrow::null()) : arrow::list(get_arrow_type(value[0]));
-        } else if (value.is_object()) {
+        }
+        if (value.is_object()) {
             std::vector<std::shared_ptr<arrow::Field>> fields;
             for (auto& field: value.items()) {
                 fields.push_back(arrow::field(field.key(), get_arrow_type(field.value())));
