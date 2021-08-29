@@ -6,23 +6,12 @@ This project provides API for converting from json string to arrow schema and vi
 Presiquites
 ===========
 
-This project uses `cmake` as build file generator (min version 3.14), `conan` for package manager (optional), `libarrow-dev`, and make or ninja as build tool. Other dependencies are header-only libraries (nlohmann json, catch2), so I include them in third_party folder
-
-Install conan (you can skip if you have `libarrow-dev` installed)
------------------------------------------------------------------
-
-```
-pip3 install conan
-conan profile new default --detect
-conan profile update settings.compiler.libcxx=libstdc++11 default
-mkdir build
-conan install ..
-```
+This project uses `cmake` as build file generator (min version 3.14), `conan` for package manager (optional), `libarrow-dev` (version `5.0.0.1`), and make or ninja as build tool. Other dependencies are header-only libraries (nlohmann json, catch2), so I include them in third_party folder
 
 Install libarrow-dev
 --------------------
 
-If you installed conan as above, then no need to install arrow because conan will download arrow to `build` folder. Otherwise, please make sure you installed `libarrow-dev` followed these instructions: [https://arrow.apache.org/install/](https://arrow.apache.org/install/)
+Please make sure you installed `libarrow-dev` followed these instructions: [https://arrow.apache.org/install/](https://arrow.apache.org/install/)
 
 Build instructions (tested on ubuntu 20.04)
 ===========================================
